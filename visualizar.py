@@ -1,10 +1,10 @@
-from __future__ import annotations
+###from __future__ import annotations
 
-from typing import Any
+###from typing import Any
+from typing import Dict, Any, Tuple, Optional, List
+import matplotlib.pyplot as plt
 
-
-Nodo = dict[str, Any]
-
+Nodo = Dict[str, Any]
 
 def crear_nodo(etiqueta: str) -> Nodo:
     """
@@ -57,7 +57,7 @@ def imprimir_arbol(nodo: Nodo, prefijo: str = "", es_ultimo: bool = True) -> Non
         imprimir_arbol(hijo, nuevo_prefijo, hijo_es_ultimo)
 
 
-def fibonacci_recursivo(n: int) -> tuple[int, Nodo, int]:
+def fibonacci_recursivo(n: int) -> Tuple[int, Nodo, int]:
     """
     Calcula Fibonacci de forma recursiva y construye el árbol de llamadas.
 
@@ -96,8 +96,8 @@ def fibonacci_recursivo(n: int) -> tuple[int, Nodo, int]:
 
 def fibonacci_recursivo_memoria(
     n: int,
-    memo: dict[int, int] | None = None
-) -> tuple[int, Nodo, int]:
+    memo: Optional[Dict[int, int]] = None
+) -> Tuple[int, Nodo, int]:
     """
     Calcula Fibonacci con memoria dinámica y construye el árbol de llamadas.
 
@@ -151,11 +151,11 @@ def fibonacci_recursivo_memoria(
 
 
 def busqueda_binaria_arbol(
-    arreglo: list[int],
+    arreglo: List[int],
     objetivo: int,
     izquierda: int,
     derecha: int
-) -> tuple[int, Nodo, int]:
+) -> Tuple[int, Nodo, int]:
     """
     Realiza búsqueda binaria recursiva y construye el árbol de llamadas.
 
@@ -252,7 +252,7 @@ def ejecutar_fibonacci(n: int) -> None:
     print(f"Total de llamadas: {total_llamadas_memo}")
 
 
-def ejecutar_busqueda(arreglo: list[int], objetivo: int) -> None:
+def ejecutar_busqueda(arreglo: List[int], objetivo: int) -> None:
     """
     Ejecuta la búsqueda binaria recursiva y muestra su árbol de llamadas.
 
@@ -282,6 +282,49 @@ def ejecutar_busqueda(arreglo: list[int], objetivo: int) -> None:
     print(f"Total de llamadas: {total_llamadas}")
 
 
+def graficar_complejidades(max_n: int) -> None:
+    """
+    Genera una gráfica comparando:
+    - Fibonacci recursivo (exponencial)
+    - Fibonacci con memoria (lineal)
+    - Búsqueda binaria (logarítmica)
+    """
+
+    valores_n = []
+    llamadas_fib = []
+    llamadas_fib_memo = []
+    llamadas_busqueda = []
+
+    for n in range(1, max_n + 1):
+        # Fibonacci sin memoria
+        _, _, llamadas = fibonacci_recursivo(n)
+        llamadas_fib.append(llamadas)
+
+        # Fibonacci con memoria
+        _, _, llamadas_memo = fibonacci_recursivo_memoria(n)
+        llamadas_fib_memo.append(llamadas_memo)
+
+        # Búsqueda binaria (simulada en arreglo de tamaño n)
+        arreglo = list(range(1, n + 1))
+        objetivo = n  # peor caso
+        _, _, llamadas_bin = busqueda_binaria_arbol(arreglo, objetivo, 0, len(arreglo) - 1)
+        llamadas_busqueda.append(llamadas_bin)
+
+        valores_n.append(n)
+
+    # Graficar
+    plt.figure()
+    plt.plot(valores_n, llamadas_fib, label="Fibonacci Recursivo O(2^n)")
+    plt.plot(valores_n, llamadas_fib_memo, label="Fibonacci Memo O(n)")
+    plt.plot(valores_n, llamadas_busqueda, label="Busqueda Binaria O(log n)")
+
+    plt.xlabel("n")
+    plt.ylabel("Numero de llamadas")
+    plt.title("Comparacion de complejidades (datos reales)")
+    plt.legend()
+
+    plt.show()
+
 if __name__ == "__main__":
     ejecutar_fibonacci(6)
 
@@ -290,3 +333,4 @@ if __name__ == "__main__":
     arreglo_prueba = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     objetivo_prueba = 6
     ejecutar_busqueda(arreglo_prueba, objetivo_prueba)
+    graficar_complejidades(10)
